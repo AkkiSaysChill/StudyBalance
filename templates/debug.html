@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Debug</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1e1e1e;
+            color: #e0e0e0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #00A896;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        h2 {
+            color: #B1E5F2;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #335C81;
+            padding-bottom: 10px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            background: #2d2d2d;
+            border: 1px solid #444;
+        }
+        
+        th {
+            background: #335C81;
+            color: #fff;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+        }
+        
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #444;
+            word-break: break-word;
+        }
+        
+        tr:hover {
+            background: #3d3d3d;
+        }
+        
+        .empty {
+            text-align: center;
+            color: #888;
+            padding: 20px;
+            font-style: italic;
+        }
+        
+        .json-data {
+            background: #1a1a1a;
+            padding: 10px;
+            border-radius: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 12px;
+        }
+        
+        .button-group {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        button {
+            background: #00A896;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 0 5px;
+            font-family: inherit;
+            font-size: 14px;
+        }
+        
+        button:hover {
+            background: #17301C;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: #2d2d2d;
+            padding: 20px;
+            border-radius: 6px;
+            border-left: 4px solid #00A896;
+        }
+        
+        .stat-label {
+            color: #888;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+        
+        .stat-value {
+            color: #00A896;
+            font-size: 28px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Database Debug Panel</h1>
+        
+        <div class="button-group">
+            <button onclick="loadAllData()">🔄 Refresh Data</button>
+            <button onclick="clearDatabase()">🗑️ Clear All Data</button>
+        </div>
+        
+        <div class="stats" id="stats"></div>
+        
+        <h2>👥 Users</h2>
+        <table id="usersTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Created At</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        
+        <h2>📝 Quizzes</h2>
+        <table id="quizzesTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>User ID</th>
+                    <th>Topic</th>
+                    <th>Score</th>
+                    <th>Percentage</th>
+                    <th>Questions</th>
+                    <th>Completed At</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        
+        <h2>📅 Routines</h2>
+        <table id="routinesTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>User ID</th>
+                    <th>Title</th>
+                    <th>Wake Time</th>
+                    <th>Sleep Time</th>
+                    <th>Subjects</th>
+                    <th>Environment</th>
+                    <th>Created At</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        
+        <h2>📊 Activities</h2>
+        <table id="activitiesTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>User ID</th>
+                    <th>Type</th>
+                    <th>Title</th>
+                    <th>Quiz ID</th>
+                    <th>Routine ID</th>
+                    <th>Description</th>
+                    <th>Created At</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script>
+        async function loadAllData() {
+            try {
+                const response = await fetch('/api/debug/all-data');
+                const data = await response.json();
+                
+                // Display stats
+                displayStats(data);
+                
+                // Display users
+                displayTable('usersTable', data.users, ['id', 'username', 'email', 'created_at']);
+                
+                // Display quizzes
+                displayTable('quizzesTable', data.quizzes, ['id', 'user_id', 'topic', 'score', 'percentage', 'total_questions', 'completed_at']);
+                
+                // Display routines
+                displayTable('routinesTable', data.routines, ['id', 'user_id', 'title', 'wake_up_time', 'sleep_time', 'subjects', 'environment', 'created_at']);
+                
+                // Display activities
+                displayTable('activitiesTable', data.activities, ['id', 'user_id', 'activity_type', 'title', 'quiz_id', 'routine_id', 'description', 'created_at']);
+            } catch (error) {
+                alert('Error loading data: ' + error.message);
+            }
+        }
+        
+        function displayStats(data) {
+            const statsDiv = document.getElementById('stats');
+            statsDiv.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-label">Total Users</div>
+                    <div class="stat-value">${data.users.length}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Quizzes</div>
+                    <div class="stat-value">${data.quizzes.length}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Routines</div>
+                    <div class="stat-value">${data.routines.length}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Activities</div>
+                    <div class="stat-value">${data.activities.length}</div>
+                </div>
+            `;
+        }
+        
+        function displayTable(tableId, dataArray, columns) {
+            const tbody = document.getElementById(tableId).querySelector('tbody');
+            
+            if (!dataArray || dataArray.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="10" class="empty">No data found</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = dataArray.map(item => {
+                return '<tr>' + columns.map(col => {
+                    let value = item[col];
+                    
+                    // Format JSON fields
+                    if (typeof value === 'object' && value !== null) {
+                        value = JSON.stringify(value, null, 2);
+                    }
+                    
+                    // Truncate long values
+                    if (typeof value === 'string' && value.length > 50) {
+                        value = `<div class="json-data">${value}</div>`;
+                    }
+                    
+                    return `<td>${value || '-'}</td>`;
+                }).join('') + '</tr>';
+            }).join('');
+        }
+        
+        async function clearDatabase() {
+            if (!confirm('⚠️ This will delete ALL data from the database! Are you sure?')) {
+                return;
+            }
+            
+            if (!confirm('Last chance! This cannot be undone!')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/debug/clear-all', { method: 'POST' });
+                const result = await response.json();
+                alert(result.message);
+                loadAllData();
+            } catch (error) {
+                alert('Error clearing database: ' + error.message);
+            }
+        }
+        
+        // Load data on page load
+        loadAllData();
+    </script>
+</body>
+</html>

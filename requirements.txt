@@ -1,0 +1,8 @@
+flask
+requests
+matplotlib
+flask-sqlalchemy
+flask-login
+werkzeug
+flask-login
+werkzeug

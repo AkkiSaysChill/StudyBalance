@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity Log - StudyBalance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .activity-header {
+            background: linear-gradient(135deg, #335C81 0%, #00A896 100%);
+            color: white;
+            padding: 40px 20px;
+            margin: 0px -20px 30px -20px;
+            text-align: center;
+        }
+        
+        .activity-header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #00A896;
+            transition: transform 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #00A896;
+        }
+        
+        .stat-secondary {
+            font-size: 0.85rem;
+            color: #999;
+            margin-top: 5px;
+        }
+        
+        .sections {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section h2 {
+            color: #335C81;
+            margin-top: 0;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #E8E9F3;
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .item {
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #F5F5F5;
+            border-radius: 8px;
+            border-left: 4px solid #00A896;
+        }
+        
+        .item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .item-title {
+            font-weight: 600;
+            color: #335C81;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .badge-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px 20px;
+            border-left: 5px solid #FFD700;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            min-width: 180px;
+            transition: transform 0.3s ease;
+        }
+
+        .badge-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .badge-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .badge-title {
+            font-weight: 700;
+            color: #335C81;
+            margin-bottom: 6px;
+        }
+
+        .badge-desc {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        
+        .item-detail {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .item-detail:last-child {
+            margin-bottom: 0;
+        }
+        
+        .score-badge {
+            display: inline-block;
+            background: #00A896;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+        
+        .empty-state a {
+            color: #00A896;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 20px;
+        }
+        
+        .routine-schedule {
+            background: #E8F5F3;
+            padding: 15px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        .routine-tab-content {
+            display: none;
+        }
+        
+        .routine-tab-content.active {
+            display: block;
+        }
+        
+        .routine-detail-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .routine-detail-header {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #E8E9F3;
+        }
+        
+        .routine-detail-header h3 {
+            color: #335C81;
+            margin: 0 0 10px 0;
+            font-size: 1.5rem;
+        }
+        
+        .routine-detail-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .routine-detail-item {
+            background: #F5F5F5;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #00A896;
+        }
+        
+        .routine-detail-label {
+            font-size: 0.85rem;
+            color: #999;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        
+        .routine-detail-value {
+            color: #335C81;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .routine-schedule-full {
+            background: linear-gradient(135deg, #E8F5F3 0%, #F5F5F5 100%);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #B1E5F2;
+        }
+        
+        .schedule-step {
+            padding: 12px;
+            margin-bottom: 10px;
+            background: white;
+            border-left: 4px solid #00A896;
+            border-radius: 4px;
+        }
+        
+        .schedule-step:last-child {
+            margin-bottom: 0;
+        }
+        
+        .step-number {
+            display: inline-block;
+            background: #00A896;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-weight: 600;
+            margin-right: 10px;
+        }
+        
+        /* ---- BADGE STYLING ---- */
+        .badge-section {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .badge-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px 20px;
+            border-left: 5px solid #FFD700;
+            min-width: 160px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            transition: 0.3s ease;
+        }
+        .badge-card:hover {
+            transform: translateY(-4px);
+        }
+        .badge-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+        .badge-title {
+            font-weight: 700;
+            color: #335C81;
+            margin-bottom: 6px;
+        }
+        .badge-desc {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid #E8E9F3;
+            background: white;
+            color: #335C81;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .filter-btn.active {
+            background: #00A896;
+            color: white;
+            border-color: #00A896;
+        }
+        
+        .filter-btn:hover {
+            border-color: #00A896;
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <div class="logo-group">
+                <h1 class="logo">StudyBalance</h1>
+            </div>
+            <nav>
+                <a href="/">Home</a>
+                <a href="/ai-quiz" class="btn-outline">AI Quiz</a>
+                <a href="/leaderboard" class="btn-outline">Leaderboard</a>
+                <a href="/routine" class="btn-outline">Routine</a>
+                <a href="/activity-log" class="btn-outline">Activity Log</a>
+                <a href="/logout" class="btn-outline" style="color: #d32f2f;">Logout</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="activity-header">
+            <h1>📊 Your Activity Dashboard</h1>
+            <p>Track your quizzes, routines, and progress</p>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-label">📝 Total Quizzes</div>
+                <div class="stat-value" id="totalQuizzes">0</div>
+                <div class="stat-secondary" id="avgScore">Avg: 0%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">🎯 Best Score</div>
+                <div class="stat-value" id="bestScore">0%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">📅 Active Routines</div>
+                <div class="stat-value" id="totalRoutines">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">⭐ Total Activities</div>
+                <div class="stat-value" id="totalActivities">0</div>
+            </div>
+        </div>
+
+        <!-- Filter Buttons -->
+        <div class="filters">
+            <button class="filter-btn active" onclick="filterActivities('all')">All Activities</button>
+            <button class="filter-btn" onclick="filterActivities('quiz')">📝 Quizzes Only</button>
+            <button class="filter-btn" onclick="filterActivities('routine')">📅 Routines Only</button>
+        </div>
+
+        <!-- Tabs for Routines View -->
+        <div class="section" style="margin-bottom: 30px;">
+            <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #E8E9F3; padding-bottom: 0;">
+                <button class="routine-tab-btn active" onclick="switchRoutineTab('list')" style="padding: 12px 20px; border: none; background: none; color: #335C81; font-weight: 600; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.3s;">📋 Routine List</button>
+                <button class="routine-tab-btn" onclick="switchRoutineTab('detail')" style="padding: 12px 20px; border: none; background: none; color: #999; font-weight: 600; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.3s;">📖 Routine Detail</button>
+            </div>
+            
+            <!-- Routine List Tab -->
+            <div id="routineListTab" class="routine-tab-content active">
+                <h2>📅 Your Routines</h2>
+                <div id="routinesContainer"></div>
+            </div>
+            
+            <!-- Routine Detail Tab -->
+            <div id="routineDetailTab" class="routine-tab-content" style="display: none;">
+                <h2>📖 Full Routine Schedule</h2>
+                <div id="routineDetailContainer"></div>
+            </div>
+
+
+        </div>
+
+        <!-- Badges Section -->
+        <div class="badge-section">
+            <h2 style="color:#335C81; border-bottom:2px solid #E8E9F3; padding-bottom:10px;">🏅 Your Badges</h2>
+            <div id="badgesContainer" style="display:flex; flex-wrap:wrap; gap:15px;"></div>
+        </div>
+
+
+        <!-- Main Content Grid -->
+        <div class="sections">
+            <!-- Recent Quizzes -->
+            <div class="section">
+                <h2>📝 Recent Quizzes</h2>
+                <div id="quizzesContainer"></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let allQuizzes = [];
+        let allRoutines = [];
+        let currentFilter = 'all';
+
+        // badge loader (defined later) - keep single implementation
+
+
+        async function loadStats() {
+            try {
+                const response = await fetch('/get-user-stats');
+                const result = await response.json();
+
+                if (result.success) {
+                    const stats = result.stats;
+                    
+                    document.getElementById('totalQuizzes').textContent = stats.total_quizzes;
+                    document.getElementById('totalRoutines').textContent = stats.total_routines;
+                    document.getElementById('totalActivities').textContent = stats.total_activities;
+                    
+                    const avgScore = stats.average_quiz_score ? Math.round(stats.average_quiz_score) : 0;
+                    const bestScore = stats.highest_score || 0;
+                    
+                    document.getElementById('avgScore').textContent = `Avg: ${avgScore}%`;
+                    document.getElementById('bestScore').textContent = bestScore + '%';
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        async function loadActivities() {
+            try {
+                const response = await fetch('/get-activities');
+                const result = await response.json();
+
+                if (result.success) {
+                    const activities = result.activities;
+                    
+                    allQuizzes = activities
+                        .filter(a => a.activity_type === 'quiz')
+                        .map(a => ({
+                            id: a.id,
+                            ...a.quiz,
+                            createdAt: new Date(a.created_at)
+                        }))
+                        .sort((a, b) => b.createdAt - a.createdAt);
+                    
+                    allRoutines = activities
+                        .filter(a => a.activity_type === 'routine' && a.routine)
+                        .map(a => ({
+                            ...a.routine,
+                            createdAt: new Date(a.created_at)
+                        }))
+                        .sort((a, b) => b.createdAt - a.createdAt);
+                    
+                    displayQuizzes();
+                    displayRoutines();
+                }
+            } catch (error) {
+                console.error('Error loading activities:', error);
+            }
+        }
+
+        async function loadBadges() {
+    try {
+        const response = await fetch('/get-user-badges');
+        const result = await response.json();
+
+        if (result.success) {
+            const container = document.getElementById('badgesContainer');
+
+            if (result.badges.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <p>No badges yet. Keep studying to earn some! 🎯</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = result.badges.map(badge => `
+                <div class="badge-card">
+                    <div class="badge-icon">🏅</div>
+                    <div class="badge-title">${badge.name}</div>
+                    <div class="badge-desc">${badge.description || ''}</div>
+                </div>
+            `).join('');
+        }
+    } catch (error) {
+        console.error("Error loading badges:", error);
+    }
+}
+
+
+        function displayQuizzes() {
+            const container = document.getElementById('quizzesContainer');
+            
+            if (allQuizzes.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <p>No quizzes yet. <a href="/ai-quiz">Take one now!</a></p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = allQuizzes.slice(0, 5).map(quiz => `
+                <div class="item">
+                    <div class="item-title">${quiz.topic}</div>
+                    <div class="item-detail">
+                        <span>Score</span>
+                        <span><span class="score-badge">${quiz.percentage}%</span></span>
+                    </div>
+                    <div class="item-detail">
+                        <span>Questions</span>
+                        <span>${quiz.total_questions}</span>
+                    </div>
+                    <div class="item-detail">
+                        <span>Date</span>
+                        <span>${formatDate(quiz.createdAt)}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function displayRoutines() {
+            const container = document.getElementById('routinesContainer');
+            
+            if (allRoutines.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <p>No routines yet. <a href="/routine">Create one now!</a></p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = allRoutines.slice(0, 5).map(routine => {
+                // Handle both parsed objects and JSON strings
+                const subjects = Array.isArray(routine.subjects) ? routine.subjects : JSON.parse(routine.subjects || '[]');
+                const schedule = Array.isArray(routine.routine_schedule) ? routine.routine_schedule : JSON.parse(routine.routine_schedule || '[]');
+                
+                return `
+                    <div class="item">
+                        <div class="item-title">${routine.title}</div>
+                        <div class="item-detail">
+                            <span>Subjects</span>
+                            <span>${subjects.join(', ')}</span>
+                        </div>
+                        <div class="item-detail">
+                            <span>Schedule</span>
+                            <span>${routine.wake_up_time} - ${routine.sleep_time}</span>
+                        </div>
+                        <div class="item-detail">
+                            <span>Created</span>
+                            <span>${formatDate(routine.created_at)}</span>
+                        </div>
+                        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #ddd;">
+                            <details style="cursor: pointer;">
+                                <summary style="color: #00A896; font-weight: 600; user-select: none;">View Schedule</summary>
+                                <div class="routine-schedule" style="margin-top: 10px;">
+                                    ${schedule.map((step, i) => `<div>${i + 1}. ${step}</div>`).join('')}
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterActivities(filter) {
+            currentFilter = filter;
+            
+            // Update button states
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Filter display (for now just show all)
+            displayQuizzes();
+            displayRoutines();
+        }
+        
+        function switchRoutineTab(tab) {
+            // Hide all tabs
+            document.getElementById('routineListTab').classList.remove('active');
+            document.getElementById('routineDetailTab').classList.remove('active');
+            
+            // Remove active state from all buttons
+            document.querySelectorAll('.routine-tab-btn').forEach(btn => {
+                btn.style.color = '#999';
+                btn.style.borderBottom = '3px solid transparent';
+            });
+            
+            // Show selected tab
+            if (tab === 'list') {
+                document.getElementById('routineListTab').classList.add('active');
+                event.target.style.color = '#335C81';
+                event.target.style.borderBottom = '3px solid #00A896';
+            } else if (tab === 'detail') {
+                document.getElementById('routineDetailTab').classList.add('active');
+                event.target.style.color = '#335C81';
+                event.target.style.borderBottom = '3px solid #00A896';
+                displayRoutineDetail();
+            }
+        }
+        
+        function displayRoutineDetail() {
+            const container = document.getElementById('routineDetailContainer');
+            
+            if (allRoutines.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <p>No routines yet. <a href="/routine">Create one now!</a></p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Display all routines with full details
+            container.innerHTML = allRoutines.map(routine => {
+                // Handle both parsed objects and JSON strings
+                const subjects = Array.isArray(routine.subjects) ? routine.subjects : JSON.parse(routine.subjects || '[]');
+                const schedule = Array.isArray(routine.routine_schedule) ? routine.routine_schedule : JSON.parse(routine.routine_schedule || '[]');
+                const prefs = Array.isArray(routine.preferences) ? routine.preferences : JSON.parse(routine.preferences || '[]');
+                
+                return `
+                    <div class="routine-detail-card">
+                        <div class="routine-detail-header">
+                            <h3>${routine.title}</h3>
+                            <small style="color: #999;">Created: ${formatDate(routine.created_at)}</small>
+                        </div>
+                        
+                        <div class="routine-detail-info">
+                            <div class="routine-detail-item">
+                                <div class="routine-detail-label">Wake Up Time</div>
+                                <div class="routine-detail-value">⏰ ${routine.wake_up_time}</div>
+                            </div>
+                            <div class="routine-detail-item">
+                                <div class="routine-detail-label">Sleep Time</div>
+                                <div class="routine-detail-value">🛏️ ${routine.sleep_time}</div>
+                            </div>
+                            <div class="routine-detail-item">
+                                <div class="routine-detail-label">Study Duration</div>
+                                <div class="routine-detail-value">📚 ${routine.study_duration} min</div>
+                            </div>
+                            <div class="routine-detail-item">
+                                <div class="routine-detail-label">Break Duration</div>
+                                <div class="routine-detail-value">☕ ${routine.break_duration} min</div>
+                            </div>
+                            <div class="routine-detail-item">
+                                <div class="routine-detail-label">Exercise Duration</div>
+                                <div class="routine-detail-value">💪 ${routine.exercise_duration} min</div>
+                            </div>
+                            <div class="routine-detail-item">
+                                <div class="routine-detail-label">Environment</div>
+                                <div class="routine-detail-value">${routine.environment}</div>
+                            </div>
+                        </div>
+
+                        <!-- Badges are shown in the main Badges panel above -->
+
+                        
+                        <div style="margin-bottom: 20px;">
+                            <strong style="color: #335C81;">📖 Subjects:</strong>
+                            <div style="margin-top: 8px; display: flex; flex-wrap: wrap; gap: 8px;">
+                                ${subjects.map(subject => `
+                                    <span style="background: #E8F5F3; color: #00A896; padding: 6px 12px; border-radius: 20px; font-weight: 600;">
+                                        ${subject}
+                                    </span>
+                                `).join('')}
+                            </div>
+                        </div>
+                        
+                        ${prefs.length > 0 ? `
+                            <div style="margin-bottom: 20px;">
+                                <strong style="color: #335C81;">🎯 Study Preferences:</strong>
+                                <div style="margin-top: 8px; display: flex; flex-wrap: wrap; gap: 8px;">
+                                    ${prefs.map(pref => `
+                                        <span style="background: #E8E9F3; color: #335C81; padding: 6px 12px; border-radius: 20px;">
+                                            ${pref}
+                                        </span>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        ${routine.goals ? `
+                            <div style="margin-bottom: 20px;">
+                                <strong style="color: #335C81;">🎯 Goals:</strong>
+                                <p style="color: #666; margin-top: 8px;">${routine.goals}</p>
+                            </div>
+                        ` : ''}
+                        
+                        ${routine.challenges ? `
+                            <div style="margin-bottom: 20px;">
+                                <strong style="color: #335C81;">⚠️ Challenges:</strong>
+                                <p style="color: #666; margin-top: 8px;">${routine.challenges}</p>
+                            </div>
+                        ` : ''}
+                        
+                        <div>
+                            <strong style="color: #335C81;">📋 Daily Schedule:</strong>
+                            <div class="routine-schedule-full" style="margin-top: 12px;">
+                                ${schedule.map((step, i) => `
+                                    <div class="schedule-step">
+                                        <span class="step-number">${i + 1}</span>
+                                        <span>${step}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function formatDate(date) {
+            if (!date) return 'N/A';
+            const d = new Date(date);
+            return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        // Load data on page load
+        loadStats();
+        loadActivities();
+        loadBadges();
+    </script>
+</body>
+</html>

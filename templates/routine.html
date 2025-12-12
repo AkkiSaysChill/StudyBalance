@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Routine Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .routine-setup {
+            background: rgba(177,229,242,0.08);
+            border: 1px solid rgba(177,229,242,0.2);
+            border-radius: 12px;
+            padding: 40px;
+            max-width: 700px;
+            margin: 40px auto;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+        }
+
+        .routine-setup h1 {
+            color: var(--pale);
+            margin-bottom: 10px;
+        }
+
+        .routine-setup > p {
+            color: var(--aqua);
+            margin-bottom: 30px;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid rgba(177,229,242,0.2);
+        }
+
+        .form-section:last-of-type {
+            border-bottom: none;
+        }
+
+        .form-section h3 {
+            color: var(--teal);
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--aqua);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(177,229,242,0.3);
+            border-radius: 6px;
+            font-size: 16px;
+            background: rgba(255,255,255,0.05);
+            color: var(--pale);
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: rgba(232,233,243,0.5);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--teal);
+            background: rgba(0,168,150,0.1);
+        }
+
+        .checkbox-group,
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .checkbox-item,
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .checkbox-item:hover,
+        .radio-item:hover {
+            background: rgba(0,168,150,0.1);
+        }
+
+        .checkbox-item input[type="checkbox"],
+        .checkbox-item input[type="radio"],
+        .radio-item input[type="radio"] {
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+
+        .checkbox-item label,
+        .radio-item label {
+            cursor: pointer;
+            color: var(--pale);
+            margin: 0;
+            flex: 1;
+        }
+
+        .slider-container {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .slider-container input[type="range"] {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(177,229,242,0.3);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider-container input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            border: 3px solid var(--teal);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .slider-container input[type="range"]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            border: 3px solid var(--teal);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .slider-value {
+            min-width: 60px;
+            text-align: right;
+            color: var(--aqua);
+            font-weight: 600;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 40px;
+            justify-content: center;
+        }
+
+        .btn-primary-lg,
+        .btn-secondary {
+            padding: 14px 30px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary-lg {
+            background: var(--teal);
+            color: var(--pale);
+        }
+
+        .btn-primary-lg:hover {
+            background: var(--dark-green);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: rgba(177,229,242,0.2);
+            color: var(--aqua);
+            border: 1px solid var(--aqua);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(177,229,242,0.3);
+        }
+
+        .routine-result {
+            background: rgba(177,229,242,0.08);
+            border: 1px solid rgba(177,229,242,0.2);
+            border-radius: 12px;
+            padding: 40px;
+            max-width: 700px;
+            margin: 40px auto;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+            display: none;
+        }
+
+        .routine-result.active {
+            display: block;
+        }
+
+        .routine-result h2 {
+            color: var(--pale);
+            margin-bottom: 20px;
+        }
+
+        .routine-summary {
+            background: rgba(0,168,150,0.1);
+            border-left: 4px solid var(--teal);
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            color: var(--pale);
+        }
+
+        .routine-summary p {
+            margin: 8px 0;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            display: none;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid rgba(177,229,242,0.3);
+            border-top: 4px solid var(--teal);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: rgba(255,107,107,0.2);
+            border: 1px solid #ff6b6b;
+            color: var(--pale);
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Routine Setup Section -->
+        <div class="routine-setup" id="routineSetup">
+            <h1>📅 Create Your Study Routine</h1>
+            <p>Personalize your study schedule based on your preferences</p>
+
+            <div class="error-message" id="errorMessage"></div>
+
+            <!-- Wake Up & Sleep Times -->
+            <div class="form-section">
+                <h3>⏰ Your Schedule</h3>
+                
+                <div class="form-group">
+                    <label for="wakeUpTime">What time do you wake up?</label>
+                    <input type="time" id="wakeUpTime" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="sleepTime">What time do you sleep?</label>
+                    <input type="time" id="sleepTime" required>
+                </div>
+            </div>
+
+            <!-- Study & Break Times -->
+            <div class="form-section">
+                <h3>📚 Study & Break Duration</h3>
+
+                <div class="form-group">
+                    <label>Study Session Duration (in minutes)</label>
+                    <div class="slider-container">
+                        <input type="range" id="studyDuration" min="15" max="240" value="45" step="5">
+                        <span class="slider-value"><span id="studyValue">45</span> min</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Break Duration (in minutes)</label>
+                    <div class="slider-container">
+                        <input type="range" id="breakDuration" min="5" max="30" value="15" step="5">
+                        <span class="slider-value"><span id="breakValue">15</span> min</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Exercise Time (in minutes)</label>
+                    <div class="slider-container">
+                        <input type="range" id="exerciseDuration" min="15" max="60" value="30" step="5">
+                        <span class="slider-value"><span id="exerciseValue">30</span> min</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subjects/Topics -->
+            <div class="form-section">
+                <h3>📖 What are your main subjects?</h3>
+                
+                <div class="form-group">
+                    <textarea id="subjects" placeholder="e.g., Mathematics, Physics, English, History (comma-separated)" required></textarea>
+                </div>
+            </div>
+
+            <!-- Study Style -->
+            <div class="form-section">
+                <h3>🎯 Your Study Style</h3>
+
+                <div class="form-group">
+                    <label>Preferred Study Environment</label>
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input type="radio" id="env1" name="environment" value="quiet" checked>
+                            <label for="env1">🤫 Quiet & Focused</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="env2" name="environment" value="light-music">
+                            <label for="env2">🎵 Light Music/Background Noise</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="env3" name="environment" value="group">
+                            <label for="env3">👥 Group Study</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Study Preferences</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="pref1" name="preferences" value="active-recall">
+                            <label for="pref1">Active Recall (Testing yourself)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="pref2" name="preferences" value="spaced-repetition">
+                            <label for="pref2">Spaced Repetition</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="pref3" name="preferences" value="visual">
+                            <label for="pref3">Visual Learning (Diagrams, Videos)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="pref4" name="preferences" value="practice-problems">
+                            <label for="pref4">Practice Problems</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Goals -->
+            <div class="form-section">
+                <h3>🎯 Your Goals</h3>
+
+                <div class="form-group">
+                    <label for="goals">What are your learning goals?</label>
+                    <textarea id="goals" placeholder="e.g., Improve grades, Prepare for exams, Learn new topics"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="challenges">Any challenges or distractions?</label>
+                    <textarea id="challenges" placeholder="e.g., Social media, Procrastination, Difficulty concentrating"></textarea>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-secondary" onclick="resetForm()">Clear</button>
+                <button class="btn-primary-lg" onclick="generateRoutine()">Generate My Routine</button>
+            </div>
+        </div>
+
+        <!-- Loading Section -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p style="color: var(--aqua);">Creating your personalized routine...</p>
+        </div>
+
+        <!-- Routine Result Section -->
+        <div class="routine-result" id="routineResult">
+            <h2>📅 Your Personalized Routine</h2>
+            
+            <div class="routine-summary" id="routineSummary"></div>
+
+            <div id="routineSchedule"></div>
+
+            <div class="button-group" style="margin-top: 30px;">
+                <button class="btn-secondary" onclick="saveRoutine()">💾 Save </button>
+                <button class="btn-primary-lg" onclick="createNewRoutine()">Create Another</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Update slider values in real-time
+        document.getElementById('studyDuration').addEventListener('input', (e) => {
+            document.getElementById('studyValue').textContent = e.target.value;
+        });
+
+        document.getElementById('breakDuration').addEventListener('input', (e) => {
+            document.getElementById('breakValue').textContent = e.target.value;
+        });
+
+        document.getElementById('exerciseDuration').addEventListener('input', (e) => {
+            document.getElementById('exerciseValue').textContent = e.target.value;
+        });
+
+        function collectRoutineData() {
+            const data = {
+                wakeUpTime: document.getElementById('wakeUpTime').value,
+                sleepTime: document.getElementById('sleepTime').value,
+                studyDuration: parseInt(document.getElementById('studyDuration').value),
+                breakDuration: parseInt(document.getElementById('breakDuration').value),
+                exerciseDuration: parseInt(document.getElementById('exerciseDuration').value),
+                subjects: document.getElementById('subjects').value.split(',').map(s => s.trim()),
+                environment: document.querySelector('input[name="environment"]:checked').value,
+                preferences: Array.from(document.querySelectorAll('input[name="preferences"]:checked')).map(cb => cb.value),
+                goals: document.getElementById('goals').value,
+                challenges: document.getElementById('challenges').value,
+                createdAt: new Date().toISOString()
+            };
+            return data;
+        }
+
+        function validateForm() {
+            const errorMessage = document.getElementById('errorMessage');
+            
+            if (!document.getElementById('wakeUpTime').value) {
+                errorMessage.textContent = '❌ Please enter your wake up time';
+                errorMessage.classList.add('show');
+                return false;
+            }
+
+            if (!document.getElementById('sleepTime').value) {
+                errorMessage.textContent = '❌ Please enter your sleep time';
+                errorMessage.classList.add('show');
+                return false;
+            }
+
+            if (!document.getElementById('subjects').value.trim()) {
+                errorMessage.textContent = '❌ Please enter your subjects';
+                errorMessage.classList.add('show');
+                return false;
+            }
+
+            errorMessage.classList.remove('show');
+            return true;
+        }
+
+        async function generateRoutine() {
+            if (!validateForm()) return;
+
+            const routineData = collectRoutineData();
+            
+            document.getElementById('routineSetup').style.display = 'none';
+            document.getElementById('loading').classList.add('active');
+
+            try {
+                const response = await fetch('/generate-routine', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(routineData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    displayRoutine(result.routine, routineData);
+                } else {
+                    throw new Error(result.error || 'Failed to generate routine');
+                }
+            } catch (error) {
+                document.getElementById('loading').classList.remove('active');
+                document.getElementById('errorMessage').textContent = '❌ Error: ' + error.message;
+                document.getElementById('errorMessage').classList.add('show');
+                document.getElementById('routineSetup').style.display = 'block';
+            }
+        }
+
+        function displayRoutine(routine, routineData) {
+            document.getElementById('loading').classList.remove('active');
+
+            // Display summary
+            const summary = `
+                <strong>Your Schedule:</strong> ${routineData.wakeUpTime} - ${routineData.sleepTime}<br>
+                <strong>Subjects:</strong> ${routineData.subjects.join(', ')}<br>
+                <strong>Study Session:</strong> ${routineData.studyDuration} min | <strong>Break:</strong> ${routineData.breakDuration} min | <strong>Exercise:</strong> ${routineData.exerciseDuration} min<br>
+                <strong>Environment:</strong> ${routineData.environment}<br>
+                <strong>Study Methods:</strong> ${routineData.preferences.length > 0 ? routineData.preferences.join(', ') : 'Flexible'}
+            `;
+            document.getElementById('routineSummary').innerHTML = summary;
+
+            // Display schedule
+            const scheduleHTML = routine.map((item, index) => `
+                <div style="background: rgba(0,168,150,0.05); padding: 15px; border-radius: 6px; margin-bottom: 12px; border-left: 3px solid var(--teal);">
+                    <strong style="color: var(--aqua);">Step ${index + 1}:</strong>
+                    <p style="color: var(--pale); margin: 5px 0 0 0;">${item}</p>
+                </div>
+            `).join('');
+            document.getElementById('routineSchedule').innerHTML = scheduleHTML;
+
+            // Store routine data globally for Firebase save
+            window.currentRoutineData = {
+                schedule: routine,
+                preferences: routineData
+            };
+
+            document.getElementById('routineResult').classList.add('active');
+        }
+
+        async function saveRoutine() {
+            if (!window.currentRoutineData) return;
+
+            try {
+                const response = await fetch('/save-routine-to-db', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(window.currentRoutineData)
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    alert('✅ Routine saved to database successfully!');
+                } else {
+                    alert('❌ Error: ' + result.error);
+                }
+            } catch (error) {
+                alert('❌ Error saving routine: ' + error.message);
+            }
+        }
+
+        function createNewRoutine() {
+            document.getElementById('routineResult').classList.remove('active');
+            document.getElementById('routineSetup').style.display = 'block';
+            resetForm();
+        }
+
+        function resetForm() {
+            document.getElementById('routineSetup').querySelector('form')?.reset();
+            document.getElementById('wakeUpTime').value = '';
+            document.getElementById('sleepTime').value = '';
+            document.getElementById('studyDuration').value = '45';
+            document.getElementById('breakDuration').value = '15';
+            document.getElementById('exerciseDuration').value = '30';
+            document.getElementById('subjects').value = '';
+            document.getElementById('goals').value = '';
+            document.getElementById('challenges').value = '';
+            document.getElementById('errorMessage').classList.remove('show');
+            
+            document.getElementById('studyValue').textContent = '45';
+            document.getElementById('breakValue').textContent = '15';
+            document.getElementById('exerciseValue').textContent = '30';
+        }
+    </script>
+</body>
+</html>

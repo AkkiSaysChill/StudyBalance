@@ -1,0 +1,228 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - StudyBalance</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0a0f16, #111a28);
+            font-family: 'Orbitron', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #fff;
+            overflow: hidden;
+        }
+
+        .auth-container {
+            background: rgba(255,255,255,0.06);
+            padding: 2.5rem 2.8rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.15);
+            box-shadow: 0 0 30px rgba(0,0,0,0.6);
+            width: 100%;
+            max-width: 420px;
+            backdrop-filter: blur(12px);
+            animation: floatIn 1s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes floatIn {
+            0% { transform: translateY(-50px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        h1 {
+            color: #00d9ff;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            animation: glowText 2s infinite alternate;
+        }
+
+        h2 {
+            text-align: center;
+            color: #B1E5F2;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        @keyframes glowText {
+            0% { text-shadow: 0 0 5px #00d9ff, 0 0 10px #00d9ff; }
+            100% { text-shadow: 0 0 20px #39ff14, 0 0 40px #39ff14; }
+        }
+
+        .form-group {
+            margin-bottom: 1.4rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.4rem;
+            color: #B1E5F2;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 10px;
+            border: none;
+            outline: none;
+            font-size: 1rem;
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            transition: 0.3s;
+        }
+
+        .form-group input::placeholder {
+            color: #9aa4c8;
+        }
+
+        .form-group input:focus {
+            background: rgba(0,217,255,0.15);
+            box-shadow: 0 0 10px #00d9ff;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 0.8rem;
+            margin-top: 0.5rem;
+            background: linear-gradient(90deg, #00d9ff, #39ff14);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1rem;
+            color: #000;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-login:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #00d9ff, 0 0 40px #39ff14;
+        }
+
+        .error-message {
+            color: #ffb3b3;
+            background: rgba(179, 38, 30, 0.2);
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #B1E5F2;
+            font-size: 0.9rem;
+        }
+
+        .auth-footer a {
+            color: #39ff14;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .auth-footer a:hover {
+            text-decoration: underline;
+            color: #00d9ff;
+        }
+
+        /* Floating particles */
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #00d9ff;
+            border-radius: 50%;
+            opacity: 0.7;
+            animation: floatParticle linear infinite;
+        }
+
+        @keyframes floatParticle {
+            0% { transform: translateY(0) translateX(0); opacity: 0.4; }
+            50% { transform: translateY(-100px) translateX(40px); opacity: 1; }
+            100% { transform: translateY(-200px) translateX(0); opacity: 0; }
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0px); }
+            25% { transform: translateX(-10px); }
+            50% { transform: translateX(10px); }
+            75% { transform: translateX(-10px); }
+            100% { transform: translateX(0px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <h1>🎓 StudyBalance</h1>
+        <h2>Login</h2>
+
+        {% if error %}
+            <div class="error-message">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST" id="loginForm">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input 
+                    type="text" 
+                    id="username" 
+                    name="username" 
+                    required
+                    placeholder="Enter your username">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    required
+                    placeholder="Enter your password">
+            </div>
+
+            <button type="submit" class="btn-login">Login</button>
+        </form>
+
+        <div class="auth-footer">
+            Don't have an account?
+            <a href="{{ url_for('register') }}">Register here</a>
+        </div>
+    </div>
+
+    <script>
+        // shake container on server-side error (if any)
+        {% if error %}
+        const box = document.querySelector('.auth-container');
+        box.style.animation = 'shake 0.3s';
+        setTimeout(() => box.style.animation = '', 300);
+        {% endif %}
+
+        // floating particles
+        for (let i = 0; i < 30; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            p.style.left = Math.random() * window.innerWidth + 'px';
+            p.style.top = Math.random() * window.innerHeight + 'px';
+            p.style.animationDuration = (3 + Math.random() * 3) + 's';
+            document.body.appendChild(p);
+        }
+    </script>
+</body>
+</html>

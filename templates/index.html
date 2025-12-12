@@ -1,0 +1,129 @@
+
+<!-- use this color palate only
+colors:
+    #E8E9F3
+    #335C81
+    #17301C
+    #00A896
+    #B1E5F2 
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>home</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+<!-- 
+this is our problem statement :
+Students often struggle to maintain a healthy balance between academic pressure and physical 
+well-being, leading to burnout. Create a website or app that optimizes study schedules while 
+integrating mandatory rest and exercise intervals to ensure peak productivity and health.    
+--->
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <div class="logo-group">
+                <h1 class="logo">StudyBalance</h1>
+            </div>
+            <nav>
+                <a href="/">Home</a>
+                <a href="/leaderboard" class="btn-outline">leaderboard</a>
+                <a href="/routine" class="btn-outline">Routine</a>
+                <a href="/activity-log" class="btn-outline">Activity Log</a>
+                <a href="/logout" class="btn-outline" style="color: #d32f2f;">Logout</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container hero-inner">
+                <div class="hero-copy">
+                    <h2><span class="highlight">Study smarter<br>Stay healthier</span></h2>
+                    <p>Optimize study sessions, schedule meaningful breaks, and add short exercises to beat burnout and keep productivity high.</p>
+                    <a class="btn-primary" href="/ai-quiz">Take Quiz</a>
+                </div>
+                <div class="hero-art">
+                    <div class="card" id="weekly-card">
+                        <h3 id="weekly-title">Weekly Plan Preview</h3>
+                        <ul id="weekly-list">
+                            <li>Loading your routine…</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="features container">
+            <h3>How it helps</h3>
+            <div class="feature-grid">
+                <div class="feature">
+                    <h4>Balanced Schedules</h4>
+                    <p>Auto-generate study blocks with integrated rest to improve retention and focus.</p>
+                </div>
+                <div class="feature">
+                    <h4>Quick Exercises</h4>
+                    <p>Small, guided movements to reset your body and mind without leaving your desk.</p>
+                </div>
+                <div class="feature">
+                    <h4>AI-Powered Quiz</h4>
+                    <p>Get a personalized quiz to identify weak areas and shape your study plan.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta container">
+            <h3>Ready to build a healthier study routine?</h3>
+            <a class="btn-primary large" href="/routine">Generate My Plan</a>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; 2025 StudyBalance — Built to help students thrive.</p>
+        </div>
+    </footer>
+
+    <a href="/about-us" class="about-bottom-center" aria-label="About StudyBalance">About Us</a>
+
+    <script>
+        // fetch weekly preview on load
+        fetch('/api/weekly-preview')
+            .then(r => r.json())
+            .then(data => {
+                const list = document.getElementById('weekly-list');
+                const title = document.getElementById('weekly-title');
+                list.innerHTML = '';
+
+                if (!data.success || !data.has_routine) {
+                    title.textContent = 'Weekly Plan Preview';
+                    list.innerHTML = `
+                        <li>No routine saved yet.</li>
+                        <li>Create your first plan to see it here.</li>
+                    `;
+                    return;
+                }
+
+                title.textContent = data.title || 'Weekly Plan Preview';
+
+                list.innerHTML = `
+                    <li>Focused study: ${data.study_duration} min</li>
+                    <li>Short break: ${data.break_duration} min</li>
+                    <li>Exercise / movement: ${data.exercise_duration} min</li>
+                `;
+            })
+            .catch(() => {
+                const list = document.getElementById('weekly-list');
+                list.innerHTML = '<li>Could not load routine preview.</li>';
+            });
+    </script>
+</body>
+</html>
+

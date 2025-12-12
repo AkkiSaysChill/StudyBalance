@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-light: #E8E9F3;
+      --primary: #335C81;
+      --text-dark: #17301C;
+      --accent: #00A896;
+      --soft-blue: #B1E5F2;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', Arial, sans-serif; }
+    body {
+      line-height: 1.6;
+      color: #FDFBFF;
+      background: linear-gradient(135deg, var(--primary), var(--text-dark));
+      min-height: 100vh;
+    }
+
+    h1, h2, h3 { font-weight: 700; }
+
+    header { background: var(--primary); color: #ffffff; padding: 16px 24px; }
+    header .logo { font-size: 1.4rem; font-weight: 700; }
+
+    nav { display: flex; align-items: center; justify-content: space-between; max-width: 1100px; margin: 0 auto; }
+    .nav-links { list-style: none; display: flex; gap: 16px; }
+    .nav-links a { color: #E8E9F3; text-decoration: none; font-size: 0.95rem; }
+    .nav-links a:hover { text-decoration: underline; }
+
+    main { max-width: 1100px; margin: 24px auto; padding: 0 16px 40px; }
+
+    .hero-about { 
+      text-align: center; 
+      margin-bottom: 32px; 
+      background: rgba(177, 229, 242, 0.95); 
+      border-radius: 12px; 
+      padding: 32px 20px; 
+      backdrop-filter: blur(10px);
+    }
+    .hero-about h1 { font-size: 2.5rem; margin-bottom: 12px; color: var(--primary); }
+    .hero-about p { color: var(--text-dark); font-size: 1.1rem; max-width: 600px; margin: 0 auto 16px; }
+
+    .about-content { display: flex; flex-wrap: wrap; gap: 24px; align-items: center; margin: 32px 0; }
+    .about-text { 
+      flex: 1 1 260px; 
+      background: rgba(232, 233, 243, 0.95); 
+      border-radius: 12px; 
+      padding: 24px 20px; 
+      border-left: 4px solid var(--accent); 
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      backdrop-filter: blur(10px);
+    }
+
+    .about-text h2 { font-size: 1.5rem; margin-bottom: 12px; color: var(--primary); }
+    .about-text p { margin-bottom: 12px; font-size: 1rem; color: var(--text-dark); }
+    .about-text ul { list-style: none; margin-left: 0; color: var(--text-dark); font-size: 0.98rem; }
+    .about-text ul li { padding: 4px 0; }
+    .about-text ul li::before { content: "→"; color: var(--accent); font-weight: bold; margin-right: 8px; }
+
+    .about-image { flex: 1 1 260px; text-align: center; }
+    .about-image img { max-width: 100%; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+
+    .team { margin-top: 40px; }
+    .team h2 { font-size: 1.8rem; margin-bottom: 24px; color: #FDFBFF; text-align: center; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+    .team-grid { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
+
+    .team-card {
+      background: rgba(232, 233, 243, 0.95);
+      border-radius: 12px;
+      padding: 20px;
+      width: 240px;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      backdrop-filter: blur(10px);
+      border-top: 4px solid var(--accent);
+      transition: transform 0.3s ease;
+    }
+    .team-card:hover { transform: translateY(-4px); }
+
+    .team-card h3 { margin-bottom: 8px; font-size: 1.2rem; color: var(--primary); }
+    .team-card p.role { font-size: 0.95rem; color: var(--primary); margin-bottom: 8px; font-weight: 500; }
+    .team-card p.bio { font-size: 0.92rem; color: var(--text-dark); line-height: 1.5; }
+
+    footer { 
+      background: var(--primary); 
+      color: #E8E9F2; 
+      text-align: center; 
+      padding: 20px 8px; 
+      font-size: 0.9rem; 
+      margin-top: 40px; 
+    }
+
+    .cta-button {
+      display: inline-block;
+      margin-top: 16px;
+      padding: 12px 24px;
+      border-radius: 25px;
+      background: var(--accent);
+      color: var(--text-dark);
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      box-shadow: 0 4px 15px rgba(0,168,150,0.4);
+      transition: all 0.3s ease;
+    }
+    .cta-button:hover { 
+      background: var(--primary); 
+      color: #E8E9F3;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(51,92,129,0.5);
+    }
+
+    @media (max-width: 700px) {
+      nav { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .hero-about h1 { font-size: 2rem; }
+      .about-content { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <div class="logo">StudyBalance</div>
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero-about">
+      <h1>More..</h1>
+      <p>We build smart study plans that balance focused learning with essential rest and exercise, so students can stay productive without burning out.</p>
+      <a href="/routine" class="cta-button">Start planning now</a>
+    </section>
+
+    <section class="about-content">
+      <div class="about-text">
+        <h2>Who we are</h2>
+        <p>We are a small team of students, learning developers who understand how hard it is to juggle classes, coaching, and self‑study without sacrificing health.</p>
+        <p>Our app uses intelligent scheduling to divide your day into deep‑work sessions, short breaks, and dedicated exercise time, so you can study smarter and still sleep well, move your body, and recharge your mind.</p>
+        <ul>
+          <li>Automatically generated study plans based on subjects, deadlines, and difficulty.</li>
+          <li>Built‑in rest and workout blocks to protect your health and focus.</li>
+          <li>Clear daily timetable so you always know what to study and when.</li>
+        </ul>
+      </div>
+
+      <div class="about-image">
+        <img src="{{ url_for('static', filename='about-us.png') }}" alt="banner">
+      </div>
+    </section>
+
+    <section class="team">
+      <h2>Our Team</h2>
+      <div class="team-grid">
+        <article class="team-card">
+          <h3>Abhimanyu Chauhan</h3>
+          <p class="role">Backend Designer</p>
+          <p class="bio">Built StudyFlow to balance study with sleep and exercise.</p>
+        </article>
+
+        <article class="team-card">
+          <h3>Tanish Panwar & Aditya Barthwal</h3>
+          <p class="role">Frontend Developers</p>
+          <p class="bio">Designing smooth, user-friendly web experiences</p>
+        </article>
+
+        <article class="team-card">
+          <h3>Shelly & Aditi Bhandari</h3>
+          <p class="role">UI/UX Designers</p>
+          <p class="bio">Design simple interfaces so students focus on studying, not the app.</p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    &copy; 2025 StudyFlow. All rights reserved.
+  </footer>
+</body>
+</html>
