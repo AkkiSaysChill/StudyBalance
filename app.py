@@ -8,6 +8,9 @@ import json
 from models import db, User, Quiz, Routine, Activity, Badge, UserBadge
 from datetime import datetime
 
+# Holds the last upstream OpenRouter error message for debugging
+LAST_OPENROUTER_ERROR = None
+
 app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), 'static'), static_url_path='/static', instance_relative_config=True)
 app.secret_key = 'your-secret-key-change-this-in-production'
 
@@ -27,7 +30,7 @@ login_manager.login_view = 'login'
 db.init_app(app)
 
 # OpenRouter API Configuration
-OPENROUTER_API_KEY = "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"
+OPENROUTER_API_KEY = "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"
 OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
 
 
@@ -181,7 +184,9 @@ def generate_quiz_questions(topic, num_questions=5):
             "Content-Type": "application/json"
         }
         
-        prompt = f"""Generate exactly {num_questions} multiple choice quiz questions about '{topic}' for a student study app.
+        prompt = f"""Generate exactly {num_questions} multiple choice quiz questions about '{topic}' for a student study app and give random question without repeating
+        set difficulty levels ranging from easy to hard
+        .
         
         Format the response as a JSON array with this structure:
         [
